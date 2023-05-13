@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 
-const NavBar = () => {
-  const [nav, setNav] = useState(false);
+const NavBar = ({ prop }) => {
   const links = [
     {
       id: 1,
@@ -27,7 +26,7 @@ const NavBar = () => {
   ];
 
   return (
-    <div className="flex px-4 justify-between items-center w-full h-20 bg-black text-white fixed">
+    <div className="flex px-4 justify-between items-center w-full h-20 bg-black text-white relative">
       <div>
         <h1 className="text-5xl font-signature capitalize ml-3 mt-3">ankit</h1>
       </div>
@@ -46,17 +45,21 @@ const NavBar = () => {
 
       <div
         onClick={() => {
-          setNav(!nav);
+          prop.setNav(!prop.nav);
         }}
         className="md:hidden cursor-pointer m-3 z-10 text-gray-400"
       >
-        {nav ? <FaTimes size={30} className="duration-200 "/> : <FaBars className="duration-200 " size={30} />}
+        {prop.nav ? (
+          <FaTimes size={30} className="hover:rotate-180 duration-200  " />
+        ) : (
+          <FaBars className="hover:rotate-180 duration-200" size={30} />
+        )}
       </div>
-      {nav && (
-        <ul className="flex flex-col rounded-md justify-center items-center absolute top-16 pr-1 right-0 w-1/2  duration-300 bg-black text-gray-400">
+      {prop.nav && (
+        <ul className="flex flex-col shadow-md shadow-white rounded-md justify-center items-center absolute top-16 pr-1 right-0 w-1/2  duration-300 bg-gray-700 text-gray-400">
           {links.map((e) => {
             return (
-              <li key={e.id} className="py-4 cursor-pointer capitalize text-2xl">
+              <li key={e.id} className="py-4 text-center rounded-md mb-2 hover:shadow-sm hover:shadow-gray-400 w-10/12 cursor-pointer capitalize text-md">
                 {e.link}
               </li>
             );
