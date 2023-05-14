@@ -9,24 +9,24 @@ const NavBar = ({ prop }) => {
     },
     {
       id: 2,
-      link: "about",
+      link: "About",
     },
     {
       id: 3,
-      link: "portfolio",
+      link: "Portfolio",
     },
     {
       id: 4,
-      link: "experience",
+      link: "Experience",
     },
     {
       id: 5,
-      link: "contact",
+      link: "Contact",
     },
   ];
 
   return (
-    <div className="flex px-4 justify-between items-center w-full h-20 bg-black text-white relative">
+    <div className="flex px-4 justify-between items-center w-full h-20 bg-black text-white sticky">
       <div>
         <h1 className="text-5xl font-signature capitalize ml-3 mt-3">ankit</h1>
       </div>
@@ -56,7 +56,7 @@ const NavBar = ({ prop }) => {
         )}
       </div>
       {prop.nav && (
-        <ul className="flex flex-col shadow-md shadow-white rounded-md justify-center items-center absolute top-16 pr-1 right-0 w-1/2  duration-300 bg-gray-700 text-gray-400">
+        <ul className="flex flex-col shadow-md shadow-white rounded-md justify-center items-center absolute top-16 pr-1 right-0 w-1/2  duration-300 bg-gradient-to-b from-black to-blue-950 text-gray-400">
           {links.map((e) => {
             return (
               <li key={e.id} className="py-4 text-center rounded-md mb-2 hover:shadow-sm hover:shadow-gray-400 w-10/12 cursor-pointer capitalize text-md">
