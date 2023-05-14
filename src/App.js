@@ -5,6 +5,7 @@ import Social from "./components/Social";
 import About from "./components/About";
 import Portfolio from "./components/Portfolio";
 import Modal from "./components/Modal";
+import Experience from "./components/Experience";
 
 function App() {
   const [nav, setNav] = useState(false);
@@ -14,6 +15,7 @@ function App() {
       <Home />
       <About/>
       <Portfolio/>
+      <Experience/>
       <Modal/>
       <Social/>
     </div>

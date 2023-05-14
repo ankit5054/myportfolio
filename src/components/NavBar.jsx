@@ -35,7 +35,7 @@ const NavBar = ({ prop }) => {
           return (
             <li
               key={e.id}
-              className="px-4 font-medium cursor-pointer capitalize hover:scale-110 duration-200 text-gray-400"
+              className="px-4 font-medium cursor-pointer capitalize hover:text-white hover:scale-110 duration-200 text-gray-400"
             >
               {e.link}
             </li>

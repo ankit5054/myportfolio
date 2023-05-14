@@ -47,7 +47,7 @@ function Portfolio() {
   return (
     <div
       name="Portfolio"
-      className="pl-20 pb-8 relative bg-gradient-to-b from-black to-blue-950 w-full text-white h-auto"
+      className="pl-20 pb-32 pt-20 relative bg-gradient-to-b from-black to-blue-950 w-full text-white h-auto"
     >
       <div className="mx-auto flex flex-col justify-center w-full h-full">
         <div className="pb-4">
@@ -58,7 +58,7 @@ function Portfolio() {
         </div>
         <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-1 justify-center px-12 gap-8">
           {temp.map((i) => (
-            <div className="mt-8 border-white shadow-md shadow-slate-400 rounded-md p-2 justify-between hover:scale-110 duration-200">
+            <div key={i.id} className="mt-8 border-white shadow-md shadow-slate-400 rounded-md p-2 justify-between hover:scale-110 duration-200">
               <img src={i.img} alt="" className="w-fit " />
               <div className="mt-4 mb-1 text-gray-400 flex flex-row justify-center">
                 <a
