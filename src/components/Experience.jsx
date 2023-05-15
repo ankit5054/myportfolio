@@ -9,6 +9,7 @@ import graphql from "../assets/graphql.png";
 import github from "../assets/github.png";
 import tailwind from "../assets/tailwind.png";
 import node from "../assets/node.png";
+import { RxDownload } from "react-icons/rx";
 
 function Experience() {
   let temp = [
@@ -78,9 +79,7 @@ function Experience() {
             <p className="text-3xl border-b-4 border-gray-400  inline text-white">
               Experience
             </p>
-            <p className="py-6">
-              Technologies that I've worked with
-            </p>
+            <p className="py-6">Technologies that I've worked with</p>
           </div>
           {/* <div> */}
         </div>{" "}
@@ -98,9 +97,25 @@ function Experience() {
         </div>
         <div className="mx-auto pt-8 font-semibold flex flex-col w-full h-full">
           <div className="pb-4">
-            <p className="py-6">
-              * Please refer resume for complete details.
-            </p>
+            <p className="py-6">* Please refer resume for complete details.</p>
+          </div>
+          <div className="">
+            <a
+              rel="noreferrer"
+              target="_blank"
+              href="/resume.pdf"
+              download={true}
+              className="flex justify-between items-center w-full text-white"
+            >
+              <button className="text-white bg-gradient-to-b from-cyan-500 to-blue-500 px-6 py-3 my-8 mx-auto flex items-center rounded-md hover:scale-110 duration-300">
+                <div className="flex flex-row justify-evenly gap-5 ">
+                  <div>Resume</div>
+                  <div>
+                    <RxDownload className="" size={25} />
+                  </div>
+                </div>
+              </button>
+            </a>
           </div>
           {/* <div> */}
         </div>{" "}
