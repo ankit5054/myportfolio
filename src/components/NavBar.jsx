@@ -1,6 +1,6 @@
 import React from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
-
+import { Link } from "react-scroll";
 const NavBar = ({ prop }) => {
   const links = [
     {
@@ -37,7 +37,9 @@ const NavBar = ({ prop }) => {
               key={e.id}
               className="px-4 font-medium cursor-pointer capitalize hover:text-white hover:scale-110 duration-200 text-gray-400"
             >
-              {e.link}
+              <Link to={e.link} smooth duration={500}>
+                {e.link}
+              </Link>
             </li>
           );
         })}
@@ -59,9 +61,15 @@ const NavBar = ({ prop }) => {
         <ul className="flex flex-col shadow-md shadow-white rounded-md justify-center items-center absolute top-16 pr-1 right-0 w-1/2  duration-300 bg-gradient-to-b from-black to-blue-950 text-gray-400">
           {links.map((e) => {
             return (
-              <li key={e.id} className="py-4 text-center rounded-md mb-2 hover:shadow-sm hover:shadow-gray-400 w-10/12 cursor-pointer capitalize text-md">
-                {e.link}
-              </li>
+              <Link to={e.link} smooth duration={700} className="py-4 text-center rounded-md mb-2 hover:shadow-sm hover:shadow-gray-400 w-10/12 cursor-pointer capitalize text-md">
+                <li
+                  key={e.id}
+                  // className="py-4 text-center rounded-md mb-2 hover:shadow-sm hover:shadow-gray-400 w-10/12 cursor-pointer capitalize text-md"
+                  onClick={()=>(prop.setNav(!prop.nav))}
+                >
+                  {e.link}
+                </li>
+              </Link>
             );
           })}
         </ul>

@@ -6,6 +6,7 @@ import About from "./components/About";
 import Portfolio from "./components/Portfolio";
 import Modal from "./components/Modal";
 import Experience from "./components/Experience";
+import Contact from "./components/Contact";
 
 function App() {
   const [nav, setNav] = useState(false);
@@ -17,6 +18,7 @@ function App() {
       <Portfolio/>
       <Experience/>
       <Modal/>
+      <Contact/>
       <Social/>
     </div>
 

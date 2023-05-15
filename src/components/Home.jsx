@@ -1,6 +1,7 @@
 import React from "react";
 import mypic from "../assets/Mypic.jpeg";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { Link } from "react-scroll";
 
 const Home = () => {
   return (
@@ -16,18 +17,21 @@ const Home = () => {
           <p className="text-gray-400 py-4 max-w-md text-lg">
             I have 2 years of experience in building and designing software.
             Currently, I have to work on web application using technologies like
-            ReactJS, Tailwind, NestJS, Kafka, Postgres, MongoDB, NodeJS, RestAPI's ,GraphQL, AWS.
+            ReactJS, Tailwind, NestJS, Kafka, Postgres, MongoDB, NodeJS,
+            RestAPI's ,GraphQL, AWS.
           </p>
           <div className="py-6">
-            <button className=" group text-white w-fit px-6 py-3 my-2 flex items-center rounded-lg bg-gradient-to-r from-blue-700 to-blue-500 hover:scale-105 duration-200 text-lg cursor-pointer">
-              Portfolio
-              <span>
-                <MdOutlineKeyboardArrowRight
-                  size={30}
-                  className="items-center group-hover:rotate-90 duration-300"
-                />
-              </span>
-            </button>
+            <Link to="Portfolio" smooth duration={900}>
+              <button className=" group text-white w-fit px-6 py-3 my-2 flex items-center rounded-lg bg-gradient-to-r from-blue-700 to-blue-500 hover:scale-105 duration-200 text-lg cursor-pointer">
+                Portfolio
+                <span>
+                  <MdOutlineKeyboardArrowRight
+                    size={30}
+                    className="items-center group-hover:rotate-90 duration-300"
+                  />
+                </span>
+              </button>
+            </Link>
           </div>
         </div>
         <div className="">

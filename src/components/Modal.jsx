@@ -5,7 +5,7 @@ export default function Modal() {
   return (
     <>
       {showModal ? (
-        <div>
+        <div className="">
           <div className="m-4 items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
               {/*content*/}
@@ -22,9 +22,9 @@ export default function Modal() {
                   </p>
                 </div>
                 {/*footer*/}
-                <div className="flex items-center justify-center p-6 border-t border-solid border-slate-200 rounded-b">
+                <div className="flex items-center justify-center  border-t border-solid border-slate-200 rounded-b">
                   <button
-                    className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                    className="text-red-500 background-transparent border-gray-400 hover:border-black rounded-md border-2 font-bold uppercase px-9 py-2 text-sm outline-none focus:outline-none m-8 ease-linear transition-all duration-150"
                     type="button"
                     onClick={() => setShowModal(false)}
                   >
