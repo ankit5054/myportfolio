@@ -9,6 +9,7 @@ import Experience from "./components/Experience";
 import Contact from "./components/Contact";
 
 function App() {
+  document.title = "My Portfolio"
   const [nav, setNav] = useState(false);
   return (
     <div>

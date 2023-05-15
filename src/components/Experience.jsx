@@ -70,7 +70,7 @@ function Experience() {
   return (
     <div
       name="Experience"
-      className="pl-20 pb-32 pt-16 relative bg-gradient-to-b from-blue-950 to-black w-full text-white h-auto"
+      className="md:pl-20 pl-4 pb-32 pt-16 relative bg-gradient-to-b from-blue-950 to-black w-full text-white h-auto"
     >
       <div>
         <div className="mx-auto flex flex-col w-full h-full">
@@ -88,7 +88,7 @@ function Experience() {
           {temp.map((i) => (
             <div
               key={i.id}
-              className={`mt-12 flex flex-col border-white shadow-lg rounded-md p-2 items-center hover:scale-110 duration-200 ${i.style}`}
+              className={`mt-12 flex flex-col border-white shadow-lg rounded-md p-2 items-center hover:scale-105 duration-200 ${i.style}`}
             >
               <img src={i.img} alt="" className="w-1/3" />
               <p className="pt-3">{i.title}</p>
@@ -96,6 +96,14 @@ function Experience() {
           ))}
           {/* </div> */}
         </div>
+        <div className="mx-auto pt-8 font-semibold flex flex-col w-full h-full">
+          <div className="pb-4">
+            <p className="py-6">
+              * Please refer resume for complete details.
+            </p>
+          </div>
+          {/* <div> */}
+        </div>{" "}
         {/* </div> */}
       </div>
     </div>

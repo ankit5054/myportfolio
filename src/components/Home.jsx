@@ -7,9 +7,9 @@ const Home = () => {
   return (
     <div
       name="Home"
-      className="md:h-screen p-4 sm:h-auto pb-20 w-full bg-gradient-to-b from-black via-gray-900 to-blue-950"
+      className="md:h-screen pl-4 sm:h-auto pb-20 w-full bg-gradient-to-b from-black via-gray-900 to-blue-950"
     >
-      <div className="max-w-screen-lg mx-auto flex flex-col items-center md:justify-between  h-full px-4 md:flex-row">
+      <div className="max-w-screen-lg mx-auto flex flex-col items-center md:justify-between  h-full md:flex-row">
         <div className="flex flex-col justify-center h-full mx-10">
           <h2 className="text-4xl sm:text-8xl pt-10 flex text-white">
             I'm a Full Stack Developer
