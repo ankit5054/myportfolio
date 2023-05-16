@@ -99,11 +99,11 @@ function Experience() {
           <div className="pb-4">
             <p className="py-6">* Please refer resume for complete details.</p>
           </div>
-          <div className="">
+          <div className="md:hidden">
             <a
               rel="noreferrer"
               target="_blank"
-              href="/resume.pdf"
+              href="https://drive.google.com/file/d/1RUJ8f5x68dAGKd9MuMU-ZbffT22gfzMr/view?usp=share_link"
               download={true}
               className=""
             >

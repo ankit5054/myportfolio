@@ -39,8 +39,8 @@ const Social = () => {
           Resume <GoFilePdf size={30} />
         </>
       ),
-      href: "/resume.pdf",
-      // download: true,
+      href: "https://drive.google.com/file/d/1RUJ8f5x68dAGKd9MuMU-ZbffT22gfzMr/view?usp=share_link",
+      download: true,
     },
   ];
 
