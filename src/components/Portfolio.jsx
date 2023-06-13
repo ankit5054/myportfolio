@@ -10,34 +10,34 @@ import todo from "../assets/portfolio/todo.jpg";
 
 function Portfolio() {
   let temp = [
-    {
-      id: 1,
-      img: arrayDestruct,
-    },
-    {
-      id: 2,
-      img: installNode,
-    },
-    {
-      id: 3,
-      img: navbar,
-    },
-    {
-      id: 4,
-      img: reactParallax,
-    },
-    {
-      id: 5,
-      img: reactSmooth,
-    },
-    {
-      id: 6,
-      img: reactWeather,
-    },
-    {
-      id: 7,
-      img: usestate,
-    },
+    // {
+    //   id: 1,
+    //   img: arrayDestruct,
+    // },
+    // {
+    //   id: 2,
+    //   img: installNode,
+    // },
+    // {
+    //   id: 3,
+    //   img: navbar,
+    // },
+    // {
+    //   id: 4,
+    //   img: reactParallax,
+    // },
+    // {
+    //   id: 5,
+    //   img: reactSmooth,
+    // },
+    // {
+    //   id: 6,
+    //   img: reactWeather,
+    // },
+    // {
+    //   id: 7,
+    //   img: usestate,
+    // },
     {
       id: 8,
       img: todo,
