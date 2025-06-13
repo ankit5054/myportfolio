@@ -38,7 +38,7 @@ function Portfolio() {
               className="mt-8 border-white shadow-md shadow-slate-400 rounded-md p-2 justify-between hover:scale-110 duration-200"
             >
               <img src={i.img} alt="" className="w-fit " />
-              <div className="text-center text-gray-400 my-2">{i.title}</div>
+              <div className="text-center font-bold text-gray-300 my-2">{i.title}</div>
               <div className="mt-4 mb-1 text-gray-400 flex flex-row justify-center">
                 <a href={i.demo} rel="noreferrer" target="_blank">
                   <button className=" py-2 px-2 text-center w-fit rounded-md shadow-md hover:scale-110 duration-200 shadow-gray-500 mx-4">
