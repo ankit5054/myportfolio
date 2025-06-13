@@ -1,38 +1,21 @@
 import todo from "../assets/portfolio/todo.jpg";
+import netflixgpt from "../assets/portfolio/netflixgpt.png";
 
 function Portfolio() {
   let temp = [
-    // {
-    //   id: 1,
-    //   img: arrayDestruct,
-    // },
-    // {
-    //   id: 2,
-    //   img: installNode,
-    // },
-    // {
-    //   id: 3,
-    //   img: navbar,
-    // },
-    // {
-    //   id: 4,
-    //   img: reactParallax,
-    // },
-    // {
-    //   id: 5,
-    //   img: reactSmooth,
-    // },
-    // {
-    //   id: 6,
-    //   img: reactWeather,
-    // },
-    // {
-    //   id: 7,
-    //   img: usestate,
-    // },
     {
-      id: 8,
+      id: 2,
+      img: netflixgpt,
+      title: "Netflix Clone with Open AI",
+      code: "https://github.com/ankit5054/Todo_with_react",
+      demo: "https://netflixgpt.iamankit.in/",
+    },
+    {
+      id: 1,
       img: todo,
+      title: "Simple ToDo",
+      code: "https://github.com/ankit5054/Todo_with_react",
+      demo: "https://ankit5054.github.io/Todo_with_react/",
     },
   ];
 
@@ -50,23 +33,19 @@ function Portfolio() {
         </div>
         <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-1 justify-center px-12 gap-8">
           {temp.map((i) => (
-            <div key={i.id} className="mt-8 border-white shadow-md shadow-slate-400 rounded-md p-2 justify-between hover:scale-110 duration-200">
+            <div
+              key={i.id}
+              className="mt-8 border-white shadow-md shadow-slate-400 rounded-md p-2 justify-between hover:scale-110 duration-200"
+            >
               <img src={i.img} alt="" className="w-fit " />
+              <div className="text-center text-gray-400 my-2">{i.title}</div>
               <div className="mt-4 mb-1 text-gray-400 flex flex-row justify-center">
-                <a
-                  href="https://ankit5054.github.io/Todo_with_react/"
-                  rel="noreferrer"
-                  target="_blank"
-                >
+                <a href={i.demo} rel="noreferrer" target="_blank">
                   <button className=" py-2 px-2 text-center w-fit rounded-md shadow-md hover:scale-110 duration-200 shadow-gray-500 mx-4">
                     Demo
                   </button>
                 </a>
-                <a
-                  href="https://github.com/ankit5054/Todo_with_react"
-                  rel="noreferrer"
-                  target="_blank"
-                >
+                <a href={i.code} rel="noreferrer" target="_blank">
                   <button className=" py-2 px-2 text-center w-fit rounded-md shadow-md hover:scale-110 duration-200 shadow-gray-500 mx-4">
                     Code
                   </button>
