@@ -1,7 +1,8 @@
 {
   "files": {
     "main.css": "/static/css/main.7db1fdc6.css",
-    "main.js": "/static/js/main.1fbda6be.js",
+    "main.js": "/static/js/main.ad9712b7.js",
+    "static/media/netflixgpt.png": "/static/media/netflixgpt.5bab4bff4e649d32426b.png",
     "static/media/Mypic.jpeg": "/static/media/Mypic.9da9f85a5b1be5f57a6d.jpeg",
     "static/media/react.png": "/static/media/react.0cf951a69d8e58f83f9d.png",
     "static/media/todo.jpg": "/static/media/todo.1ec70eb7e5f746c5d808.jpg",
@@ -13,10 +14,10 @@
     "static/media/javascript.png": "/static/media/javascript.1ccd6ef9bb1f9c84ef00.png",
     "index.html": "/index.html",
     "main.7db1fdc6.css.map": "/static/css/main.7db1fdc6.css.map",
-    "main.1fbda6be.js.map": "/static/js/main.1fbda6be.js.map"
+    "main.ad9712b7.js.map": "/static/js/main.ad9712b7.js.map"
   },
   "entrypoints": [
     "static/css/main.7db1fdc6.css",
-    "static/js/main.1fbda6be.js"
+    "static/js/main.ad9712b7.js"
   ]
 }
