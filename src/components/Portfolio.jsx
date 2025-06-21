@@ -8,7 +8,7 @@ function Portfolio() {
       img: netflixgpt,
       title: "Netflix Clone with Open AI",
       code: "https://github.com/ankit5054/netflixGPT",
-      demo: "https://netflixgpt.iamankit.in/",
+      demo: "https://netflixai.iamankit.in/",
     },
     {
       id: 1,
