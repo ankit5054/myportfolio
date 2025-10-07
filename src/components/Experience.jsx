@@ -69,7 +69,7 @@ function Experience() {
   return (
     <div
       name="Experience"
-      className="md:pl-20 pl-4 pb-32 pt-16 relative bg-gradient-to-b from-blue-950 to-black w-full text-white h-auto"
+      className="md:px-20 md:py-8 p-4 relative  w-full text-white h-auto"
     >
       <div>
         <div className="mx-auto flex flex-col w-full h-full">

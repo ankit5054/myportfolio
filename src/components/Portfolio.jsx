@@ -22,7 +22,7 @@ function Portfolio() {
   return (
     <div
       name="Portfolio"
-      className="md:pl-20 pl-4 pb-32 pt-20 relative bg-gradient-to-b from-black to-blue-950 w-full text-white h-auto"
+      className="md:pl-20 pl-4 pb-32 pt-20 relative  text-white h-auto"
     >
       <div className="mx-auto flex flex-col justify-center w-full h-full">
         <div className="pb-4">

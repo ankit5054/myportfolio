@@ -7,15 +7,17 @@ import Portfolio from "./components/Portfolio";
 import Modal from "./components/Modal";
 import Experience from "./components/Experience";
 import Contact from "./components/Contact";
+import Skills from "./components/Skills";
 
 function App() {
   document.title = "My Portfolio"
   const [nav, setNav] = useState(false);
   return (
-    <div>
+    <div className="bg-gradient-to-b from-black via-gray-900 to-gray-800">
       <NavBar prop={{nav:nav,setNav:setNav}}/>
       <Home />
       <About/>
+      <Skills/>
       <Portfolio/>
       <Experience/>
       <Modal/>
