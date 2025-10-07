@@ -11,7 +11,7 @@ export default function Skills() {
     },
     {
       skill: "CI/CD Pipelines",
-      value: "Concourse, ArgoCD Testing & Quality Jest, React Testing Library",
+      value: "Concourse, ArgoCD ",
     },
     {
       skill: "Frontend (Secondary)",
@@ -22,13 +22,17 @@ export default function Skills() {
       value: "Jira,Bitbucket, Postman, Git, Dynatrace, Erwin",
     },
     {
+      skill: "Testing",
+      value: "Jest, React Testing Library",
+    },
+    {
       skill: "Core Strengths",
       value:
         "Query Optimization, Performance Tuning, Caching Strategies, API Design, System Architecture",
     },
   ];
   return (
-    <div name="Skills" className=" md:px-20 md:py-8 p-4 w-full">
+    <div name="Skills" className="md:px-20 md:py-8 p-4 w-full">
       <h1 className="text-3xl border-b-4 border-gray-400 pt-10 inline text-white">
         Technical Skills
       </h1>
