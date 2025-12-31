@@ -13,6 +13,7 @@ const OrderSummary = () => {
   const txnId = searchParams.get('txnId');
 
   useEffect(() => {
+    document.title = 'Order Summary - Ankit Mishra | Full Stack Developer';
     if (txnId) {
       fetchOrderDetails(txnId);
     } else {
@@ -42,22 +43,10 @@ const OrderSummary = () => {
           paymentDetails: data.data.paymentDetails?.[0] || {}
         });
 
-        // Send confirmation emails if payment is completed
+        // Send confirmation emails if payment is completed and not already sent
         if (data.data.state === 'COMPLETED' && bookingData.email && serviceData.title) {
-          try {
-            await fetch('http://localhost:3001/api/send-confirmation-emails', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                transactionId,
-                bookingData: JSON.stringify(bookingData),
-                serviceData: JSON.stringify(serviceData)
-              })
-            });
-            console.log('Confirmation emails sent successfully');
-          } catch (emailError) {
-            console.error('Failed to send confirmation emails:', emailError);
-          }
+          // Skip sending emails from OrderSummary - let transaction processor handle it
+          console.log('Payment completed - emails will be sent by transaction processor');
         }
       }
       setLoading(false);
@@ -104,7 +93,7 @@ const OrderSummary = () => {
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.text('Email: ankit.mishra9780@gmail.com', 20, 75);
-    doc.text('Phone: +91 9876543210', 20, 82);
+    // doc.text('Phone: +91 9876543210', 20, 82);
     doc.text('Website: iamankit.in', 20, 89);
     
     // Receipt number and date (right aligned)
@@ -345,7 +334,7 @@ const OrderSummary = () => {
                 </div>
                 <div>
                   <span className="text-gray-300 block">Price:</span>
-                  <span className="text-white">₹{orderData.service.price}</span>
+                  <span className="text-white">${orderData.service.price} (₹{(orderData.amount / 100).toFixed(2)})</span>
                 </div>
                 <div>
                   <span className="text-gray-300 block">Duration:</span>

@@ -12,7 +12,7 @@ const Social = () => {
           LinkedIn <FaLinkedin size={30} />
         </>
       ),
-      href: "https://www.linkedin.com/in/ankit5054/",
+      href: "https://www.linkedin.com/in/ankit9780/",
     },
     {
       id: 2,

@@ -10,6 +10,7 @@ const paymentController = require('./controllers/paymentController');
 const otpController = require('./controllers/otpController');
 const transactionProcessor = require('./services/transactionProcessor');
 const { asyncHandler } = require('./utils/helpers');
+const logger = require('./utils/logger');
 
 // Initialize Express application
 const app = express();
@@ -31,7 +32,7 @@ app.use(express.json());
 
 // Request logging middleware
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  logger.info({ method: req.method, path: req.path, ip: req.ip }, 'Incoming request');
   next();
 });
 
@@ -112,7 +113,7 @@ app.use('*', (req, res) => {
 
 // Global Error Handler
 app.use((error, req, res, next) => {
-  console.error('❌ Unhandled error:', error);
+  logger.error({ error: error.message, stack: error.stack }, 'Unhandled error');
   res.status(error.statusCode || 500).json({
     success: false,
     message: error.message || 'Internal server error',
@@ -127,27 +128,23 @@ app.use((error, req, res, next) => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log('🚀 Payment API Server Started');
-  console.log(`📍 Server running on port ${PORT}`);
-  console.log(`🌐 Frontend URL: ${config.server.frontendUrl}`);
-  console.log(`📧 Email service: ${config.email.service}`);
-  console.log(`💳 Stripe integration: ${config.stripe.secretKey ? 'Configured' : 'Not configured'}`);
-  console.log('✅ Server ready to accept requests');
+  logger.info({ port: PORT, frontendUrl: config.server.frontendUrl }, 'Payment API Server Started');
+  logger.info('Server ready to accept requests');
   
   // Start transaction processor for pending PhonePe transactions
   transactionProcessor.start(30000); // Check every 30 seconds
-  console.log('🔄 Transaction processor started');
+  logger.info('Transaction processor started');
 });
 
 // Graceful shutdown handling
 process.on('SIGTERM', () => {
-  console.log('🛑 SIGTERM received, shutting down gracefully');
+  logger.info('SIGTERM received, shutting down gracefully');
   transactionProcessor.stop();
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('🛑 SIGINT received, shutting down gracefully');
+  logger.info('SIGINT received, shutting down gracefully');
   transactionProcessor.stop();
   process.exit(0);
 });

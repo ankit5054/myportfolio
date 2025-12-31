@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 // eslint-disable-next-line no-unused-vars
 import { loadStripe } from '@stripe/stripe-js';
-import { ArrowLeft, Calendar, Clock, User, Mail, MessageSquare, Target, CreditCard, Shield, CheckCircle, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Calendar, User, MessageSquare, Target, CreditCard, Shield, CheckCircle, ChevronDown } from 'lucide-react';
 import PaymentForm from './PaymentForm';
 import SEO from './SEO';
 import { countryCodes } from '../utils/countryCodes';
@@ -22,6 +22,12 @@ const BookingPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const service = location.state?.service || JSON.parse(localStorage.getItem('bookingService') || 'null');
+  
+  useEffect(() => {
+    if (service) {
+      document.title = `Book ${service.title} - Ankit Mishra | Full Stack Developer`;
+    }
+  }, [service]);
   
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState({});
@@ -45,7 +51,7 @@ const BookingPage = () => {
     return {
       // Personal Information
       fullName: 'Ankit',
-      email: 'ankit.mishra9780@gmail.com',
+      email: 'ankit.mishra2780@gmail.com',
       phone: '9786756453',
       company: '',
       role: '',
@@ -630,26 +636,37 @@ const BookingPage = () => {
           <option value="slack">Slack</option>
         </select>
       </div>
-      
-      <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            checked={formData.followUpSessions}
-            onChange={(e) => handleInputChange('followUpSessions', e.target.checked)}
-            className="mr-3"
-          />
-          <span className="text-gray-300">
-            I'm interested in follow-up sessions at discounted rates ($10/session for productive discussions)
-          </span>
-        </label>
-      </div>
     </motion.div>
   );
 
   const renderPayment = () => (
     <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }}>
-      <h3 className="text-2xl font-bold text-white mb-6">Payment & Confirmation</h3>
+      <h3 className="text-2xl font-bold text-white mb-6">Complete Your Booking</h3>
+      
+      {/* Service Summary Card */}
+      <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-2xl p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h4 className="text-xl font-bold text-white">{service.title}</h4>
+            <p className="text-blue-300 text-sm">{service.duration} consultation</p>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-white">${service.price}</div>
+            <div className="text-sm text-gray-300">(₹899)</div>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-4 text-sm text-gray-300">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-green-400" />
+            <span>Token Amount - First Session</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-blue-400" />
+            <span>Non-refundable</span>
+          </div>
+        </div>
+      </div>
       
       {/* What Happens Next */}
       <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6 mb-6">
@@ -659,62 +676,45 @@ const BookingPage = () => {
         </h4>
         <div className="space-y-3 text-gray-300">
           <div className="flex items-start">
-            <CheckCircle className="w-5 h-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-            <span>You'll receive an <strong className="text-white">immediate booking confirmation</strong> via email</span>
+            <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mr-3 mt-0.5">
+              <span className="text-white text-xs font-bold">1</span>
+            </div>
+            <span>Immediate booking confirmation via email</span>
           </div>
           <div className="flex items-start">
-            <Clock className="w-5 h-5 text-blue-400 mr-3 mt-0.5 flex-shrink-0" />
-            <span>Within <strong className="text-white">2 business days</strong>, you'll receive the meeting link and session details</span>
+            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mr-3 mt-0.5">
+              <span className="text-white text-xs font-bold">2</span>
+            </div>
+            <span>Meeting link & session details within 2 business days</span>
           </div>
           <div className="flex items-start">
-            <Mail className="w-5 h-5 text-purple-400 mr-3 mt-0.5 flex-shrink-0" />
-            <span>I'll personally reach out to coordinate the best time for our session</span>
+            <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0 mr-3 mt-0.5">
+              <span className="text-white text-xs font-bold">3</span>
+            </div>
+            <span>Personal coordination for optimal session timing</span>
           </div>
         </div>
       </div>
       
-      {/* Order Summary */}
-      <div className="bg-gray-800/50 rounded-xl p-6 mb-6">
-        <h4 className="text-lg font-semibold text-white mb-4">Order Summary</h4>
-        <div className="space-y-3">
-          <div className="flex justify-between">
-            <span className="text-gray-300">{service.title}</span>
-            <span className="text-white">${service.price}</span>
-          </div>
-          {service.originalPrice && (
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Original Price</span>
-              <span className="text-gray-400 line-through">${service.originalPrice}</span>
-            </div>
-          )}
-          <div className="border-t border-gray-600 pt-3">
-            <div className="flex justify-between font-semibold">
-              <span className="text-white">Total</span>
-              <span className="text-white">${service.price}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Customer Details Summary */}
-      <div className="bg-gray-800/50 rounded-xl p-6 mb-6">
-        <h4 className="text-lg font-semibold text-white mb-4">Booking Details</h4>
-        <div className="grid md:grid-cols-2 gap-4 text-sm">
-          <div>
+      {/* Booking Summary */}
+      <div className="bg-gray-800/50 rounded-xl p-4 mb-6">
+        <h4 className="text-sm font-medium text-gray-300 mb-3">Booking Summary</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 text-sm">
+          <div className="flex flex-col sm:block">
             <span className="text-gray-400">Name:</span>
-            <span className="text-white ml-2">{formData.fullName}</span>
+            <span className="text-white sm:ml-2 break-words">{formData.fullName}</span>
           </div>
-          <div>
+          <div className="flex flex-col sm:block">
             <span className="text-gray-400">Email:</span>
-            <span className="text-white ml-2">{formData.email}</span>
+            <span className="text-white sm:ml-2 break-all">{formData.email}</span>
           </div>
-          <div>
+          <div className="flex flex-col sm:block">
             <span className="text-gray-400">Project:</span>
-            <span className="text-white ml-2">{formData.projectTitle}</span>
+            <span className="text-white sm:ml-2 break-words">{formData.projectTitle}</span>
           </div>
-          <div>
+          <div className="flex flex-col sm:block">
             <span className="text-gray-400">Timeline:</span>
-            <span className="text-white ml-2">{formData.timeline || 'Not specified'}</span>
+            <span className="text-white sm:ml-2">{formData.timeline || 'Flexible'}</span>
           </div>
         </div>
       </div>

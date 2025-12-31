@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import logger from '../utils/logger';
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -12,6 +13,7 @@ const PaymentSuccess = () => {
   const maxRetries = 10; // Check for 50 seconds (10 * 5 seconds)
 
   useEffect(() => {
+    document.title = 'Payment Status - Ankit Mishra | Full Stack Developer';
     if (txnId) {
       checkPaymentStatus(txnId);
     } else {
@@ -32,37 +34,6 @@ const PaymentSuccess = () => {
     }
   }, [paymentStatus, countdown, navigate, txnId]);
 
-  const sendFailureNotification = async (transactionId, reason) => {
-    try {
-      const bookingData = localStorage.getItem('bookingData');
-      const serviceData = localStorage.getItem('bookingService');
-      
-      if (bookingData && serviceData) {
-        // Check if we already sent notification for this transaction
-        const notificationSent = localStorage.getItem(`notification_${transactionId}`);
-        if (notificationSent) {
-          return; // Already sent, don't send again
-        }
-        
-        await fetch('http://localhost:3001/api/send-failure-notification', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            transactionId,
-            reason,
-            bookingData,
-            serviceData
-          })
-        });
-        
-        // Mark as sent
-        localStorage.setItem(`notification_${transactionId}`, 'true');
-      }
-    } catch (error) {
-      console.error('Failed to send failure notification:', error);
-    }
-  };
-
   const checkPaymentStatus = async (transactionId) => {
     try {
       const response = await fetch(`http://localhost:3001/api/payment-status/${transactionId}`);
@@ -74,9 +45,9 @@ const PaymentSuccess = () => {
         if (state === 'COMPLETED') {
           setPaymentStatus('success');
         } else if (state === 'FAILED') {
+          logger.error('Payment failed', null, { transactionId, state });
           setPaymentStatus('failed');
-          // Send failure notification
-          sendFailureNotification(transactionId, 'Payment failed at gateway');
+          // Skip sending failure notification - let transaction processor handle it
         } else if (state === 'PENDING' && retryCount < maxRetries) {
           // Keep checking for pending payments
           setTimeout(() => {
@@ -85,13 +56,22 @@ const PaymentSuccess = () => {
           }, 5000); // Check every 5 seconds
         } else {
           // Max retries reached or unknown state
+          logger.warn('Payment status check timeout or unknown state', null, { 
+            transactionId, 
+            state, 
+            retryCount 
+          });
           setPaymentStatus('timeout');
-          sendFailureNotification(transactionId, 'Payment timeout - exceeded maximum retry attempts');
+          // Skip sending failure notification - let transaction processor handle it
         }
       } else {
         setPaymentStatus('failed');
       }
     } catch (error) {
+      logger.error('Payment status check network error', error, { 
+        transactionId, 
+        retryCount 
+      });
       console.error('Payment status check failed:', error);
       if (retryCount < maxRetries) {
         setTimeout(() => {

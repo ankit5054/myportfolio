@@ -25,7 +25,7 @@ class TransactionProcessor {
     }
 
     this.isRunning = true;
-    logger.info('Starting transaction processor', null, { intervalMs });
+    logger.info({ intervalMs }, 'Starting transaction processor');
 
     this.intervalId = setInterval(async () => {
       await this.processPendingTransactions();
@@ -51,16 +51,14 @@ class TransactionProcessor {
    * Process all pending transactions
    */
   async processPendingTransactions() {
-    const traceId = logger.generateTraceId();
+    const traceId = `trace-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const pendingTransactions = transactionStore.getPendingTransactions();
 
     if (pendingTransactions.length === 0) {
       return;
     }
 
-    logger.info('Processing pending transactions', traceId, { 
-      count: pendingTransactions.length 
-    });
+    logger.info({ traceId, count: pendingTransactions.length }, 'Processing pending transactions');
 
     for (const transaction of pendingTransactions) {
       await this.processTransaction(transaction, traceId);
@@ -77,10 +75,7 @@ class TransactionProcessor {
    */
   async processTransaction(transaction, traceId) {
     try {
-      logger.info('Checking transaction status', traceId, { 
-        transactionId: transaction.id,
-        retryCount: transaction.retryCount 
-      });
+      logger.info({ traceId, transactionId: transaction.id, retryCount: transaction.retryCount }, 'Checking transaction status');
 
       // Check status with PhonePe
       const statusResult = await phonePeService.checkPaymentStatus(transaction.id);
@@ -92,57 +87,47 @@ class TransactionProcessor {
           completedAt: new Date()
         });
 
-        logger.info('Transaction completed successfully', traceId, { 
-          transactionId: transaction.id 
-        });
+        logger.info({ traceId, transactionId: transaction.id }, 'Transaction completed successfully');
 
-        // Send confirmation emails
-        if (transaction.customerData && transaction.serviceData) {
+        // Send confirmation emails only if not already sent
+        if (!transaction.emailSent && transaction.customerData && transaction.serviceData) {
           try {
             await emailService.sendBookingEmails(
               transaction.customerData, 
-              transaction.serviceData
+              transaction.serviceData,
+              transaction.id
             );
-            logger.info('Confirmation emails sent for completed transaction', traceId, { 
-              transactionId: transaction.id 
-            });
+            transactionStore.updateTransaction(transaction.id, 'COMPLETED', { emailSent: true });
+            logger.info({ traceId, transactionId: transaction.id }, 'Confirmation emails sent for completed transaction');
           } catch (emailError) {
-            logger.error('Failed to send confirmation emails', traceId, { 
-              error: emailError.message,
-              transactionId: transaction.id 
-            });
+            logger.error({ traceId, error: emailError.message, transactionId: transaction.id }, 'Failed to send confirmation emails');
           }
         }
 
       } else if (statusResult.state === 'FAILED') {
-        // Payment failed
-        transactionStore.updateTransaction(transaction.id, 'FAILED', {
-          failureReason: 'Payment failed at gateway',
-          failedAt: new Date()
-        });
+        // Payment failed - only send notification once
+        if (!transaction.emailSent) {
+          transactionStore.updateTransaction(transaction.id, 'FAILED', {
+            failureReason: 'Payment failed at gateway',
+            failedAt: new Date(),
+            emailSent: true
+          });
 
-        logger.warn('Transaction failed', traceId, { 
-          transactionId: transaction.id 
-        });
+          logger.warn({ traceId, transactionId: transaction.id }, 'Transaction failed');
 
-        // Send failure notification only if not already sent
-        if (!transaction.emailSent && transaction.customerData && transaction.serviceData) {
-          try {
-            await emailService.sendPaymentFailureNotification(
-              transaction.customerData,
-              transaction.serviceData,
-              'Payment failed during processing',
-              transaction.id
-            );
-            transactionStore.updateTransaction(transaction.id, 'FAILED', { emailSent: true });
-            logger.info('Failure notification sent', traceId, { 
-              transactionId: transaction.id 
-            });
-          } catch (emailError) {
-            logger.error('Failed to send failure notification', traceId, { 
-              error: emailError.message,
-              transactionId: transaction.id 
-            });
+          // Send failure notification
+          if (transaction.customerData && transaction.serviceData) {
+            try {
+              await emailService.sendPaymentFailureNotification(
+                transaction.customerData,
+                transaction.serviceData,
+                'Payment failed during processing',
+                transaction.id
+              );
+              logger.info({ traceId, transactionId: transaction.id }, 'Failure notification sent');
+            } catch (emailError) {
+              logger.error({ traceId, error: emailError.message, transactionId: transaction.id }, 'Failed to send failure notification');
+            }
           }
         }
 
@@ -150,10 +135,7 @@ class TransactionProcessor {
         // Still pending, update retry count
         transactionStore.updateTransaction(transaction.id, 'PENDING');
         
-        logger.info('Transaction still pending', traceId, { 
-          transactionId: transaction.id,
-          retryCount: transaction.retryCount + 1
-        });
+        logger.info({ traceId, transactionId: transaction.id, retryCount: transaction.retryCount + 1 }, 'Transaction still pending');
 
         // If too many retries, mark as timeout
         if (transaction.retryCount >= 9) {
@@ -162,9 +144,7 @@ class TransactionProcessor {
             timeoutAt: new Date()
           });
 
-          logger.warn('Transaction timed out', traceId, { 
-            transactionId: transaction.id 
-          });
+          logger.warn({ traceId, transactionId: transaction.id }, 'Transaction timed out');
 
           // Send timeout notification only if not already sent
           if (!transaction.emailSent && transaction.customerData && transaction.serviceData) {
@@ -177,20 +157,14 @@ class TransactionProcessor {
               );
               transactionStore.updateTransaction(transaction.id, 'TIMEOUT', { emailSent: true });
             } catch (emailError) {
-              logger.error('Failed to send timeout notification', traceId, { 
-                error: emailError.message,
-                transactionId: transaction.id 
-              });
+              logger.error({ traceId, error: emailError.message, transactionId: transaction.id }, 'Failed to send timeout notification');
             }
           }
         }
       }
 
     } catch (error) {
-      logger.error('Error processing transaction', traceId, { 
-        error: error.message,
-        transactionId: transaction.id 
-      });
+      logger.error({ traceId, error: error.message, transactionId: transaction.id }, 'Error processing transaction');
 
       // Update retry count even on error
       transactionStore.updateTransaction(transaction.id, 'PENDING');

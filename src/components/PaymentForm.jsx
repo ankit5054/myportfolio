@@ -3,11 +3,32 @@ import { FaLock, FaArrowLeft } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { Download, Smartphone } from 'lucide-react';
 import jsPDF from 'jspdf';
+import logger from '../utils/logger';
 
 const PaymentForm = ({ service, onBack }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
+  const [inrAmount, setInrAmount] = useState(Math.round(service.price * 92));
+  const [usingFallbackRate, setUsingFallbackRate] = useState(false);
+
+  // Fetch live exchange rate on component mount
+  React.useEffect(() => {
+    const fetchExchangeRate = async () => {
+      try {
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const data = await response.json();
+        const rate = data.rates.INR;
+        setInrAmount(Math.round(service.price * rate));
+        setUsingFallbackRate(false);
+      } catch (error) {
+        console.error('Failed to fetch exchange rate, using fallback:', error);
+        setUsingFallbackRate(true);
+        // Keep default rate of 92
+      }
+    };
+    fetchExchangeRate();
+  }, [service.price]);
 
   const generateReceipt = () => {
     const doc = new jsPDF();
@@ -72,24 +93,21 @@ const PaymentForm = ({ service, onBack }) => {
     
     // Payment Summary
     doc.setFillColor(248, 250, 252);
-    doc.rect(15, 250, 180, 30, 'F');
+    doc.rect(15, 250, 180, 25, 'F');
     
-    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(59, 130, 246);
     doc.setFontSize(14);
-    doc.text('Payment Summary:', 20, 265);
-    
-    if (service.originalPrice) {
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.text(`Original Price: $${service.originalPrice}`, 20, 275);
-      doc.setTextColor(34, 197, 94);
-      doc.text(`Discount Applied`, 120, 275);
-      doc.setTextColor(0, 0, 0);
-    }
-    
     doc.setFont('helvetica', 'bold');
+    doc.text('PAYMENT SUMMARY', 20, 262);
+    
+    doc.setTextColor(0, 0, 0);
     doc.setFontSize(16);
-    doc.text(`Total Amount: $${service.price}`, 120, 265);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Total Amount: ₹${inrAmount}`, 20, 270);
+    
+    doc.setTextColor(34, 197, 94);
+    doc.setFontSize(12);
+    doc.text('PAID', 160, 270);
     
     // Footer
     doc.setFontSize(8);
@@ -112,15 +130,22 @@ const PaymentForm = ({ service, onBack }) => {
       localStorage.setItem('bookingData', JSON.stringify(service.bookingData));
       localStorage.setItem('bookingService', JSON.stringify(service));
 
+      // Add timeout for PhonePe API call
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
       const response = await fetch('http://localhost:3001/api/create-phonepe-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: service.price * 100,
+          amount: inrAmount,
           serviceData: service,
           customerData: service.bookingData
-        })
+        }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -153,7 +178,17 @@ const PaymentForm = ({ service, onBack }) => {
       }
 
     } catch (err) {
-      setError(err.message || 'Payment failed. Please try again.');
+      logger.error('Payment request failed', err, { 
+        serviceTitle: service.title,
+        amount: inrAmount,
+        isTimeout: err.name === 'AbortError'
+      });
+      
+      if (err.name === 'AbortError') {
+        setError('Payment request timed out. Please check your internet connection and try again.');
+      } else {
+        setError(err.message || 'Payment failed. Please try again.');
+      }
       setLoading(false);
     }
   };
@@ -206,22 +241,18 @@ const PaymentForm = ({ service, onBack }) => {
         <h3 className="text-2xl font-bold text-white mb-2">{service.title}</h3>
         <p className="text-gray-400 mb-4">{service.duration}</p>
         <div className="text-3xl font-bold text-white">${service.price}</div>
+        <div className="text-lg text-gray-400">
+          (₹{inrAmount})
+          {usingFallbackRate && (
+            <div className="text-xs text-yellow-400 mt-1">
+              *Using approximate rate due to connection error
+            </div>
+          )}
+        </div>
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-4">
-          <div className="bg-gray-700/50 border border-gray-600 rounded-xl p-6">
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center">
-                <Smartphone className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h4 className="text-xl font-bold text-white">PhonePe Payment</h4>
-                <p className="text-gray-400">Secure UPI Payment Gateway</p>
-              </div>
-            </div>
-          </div>
-
           <div className="bg-purple-900/20 border border-purple-700 rounded-xl p-4">
             <div className="flex items-start space-x-3">
               <Smartphone className="w-5 h-5 text-purple-400 mt-0.5" />
@@ -245,11 +276,11 @@ const PaymentForm = ({ service, onBack }) => {
           </motion.div>
         )}
 
-        <div className="flex space-x-4">
+        <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
           <button
             type="button"
             onClick={onBack}
-            className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-xl flex items-center justify-center transition-all font-semibold"
+            className="w-full sm:flex-1 bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-xl flex items-center justify-center transition-all font-semibold"
           >
             <FaArrowLeft className="mr-2" /> Back
           </button>
@@ -257,14 +288,21 @@ const PaymentForm = ({ service, onBack }) => {
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white py-4 rounded-xl flex items-center justify-center transition-all disabled:opacity-50 font-semibold"
+            className="w-full sm:w-auto relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 px-6 rounded-xl flex flex-col items-center justify-center transition-all disabled:opacity-50 font-bold text-sm shadow-lg hover:shadow-purple-500/25 group"
           >
+            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             {loading ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
             ) : (
-              <>
-                <Smartphone className="mr-2" /> Pay with PhonePe ${service.price}
-              </>
+              <div className="flex flex-col items-center gap-1 relative z-10">
+                <div className="w-6 h-6 bg-white rounded-lg flex items-center justify-center shadow-lg">
+                  <span className="text-purple-600 font-black text-xs">₹</span>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs opacity-90 font-medium">Complete Payment</div>
+                  <div className="text-lg font-black tracking-tight">{inrAmount}</div>
+                </div>
+              </div>
             )}
           </button>
         </div>

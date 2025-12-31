@@ -22,7 +22,7 @@ class PaymentController {
    * POST /api/create-payment-intent
    */
   async createPaymentIntent(req, res) {
-    const traceId = logger.generateTraceId();
+    const traceId = `trace-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     try {
       logRequest(req, 'CREATE_PAYMENT_INTENT');
 
@@ -38,7 +38,7 @@ class PaymentController {
       ]);
 
       if (!validation.isValid) {
-        logger.warn('Payment intent validation failed', traceId, { missingFields: validation.missingFields });
+        logger.warn({ traceId, missingFields: validation.missingFields }, 'Payment intent validation failed');
         return res.status(400).json(
           createApiResponse(false, null, `Missing required fields: ${validation.missingFields.join(', ')}`, 400)
         );
@@ -47,7 +47,7 @@ class PaymentController {
       // Validate amount
       const amountValidation = validateAmount(amount);
       if (!amountValidation.isValid) {
-        logger.warn('Invalid amount provided', traceId, { amount });
+        logger.warn({ traceId, amount }, 'Invalid amount provided');
         return res.status(400).json(
           createApiResponse(false, null, amountValidation.error, 400)
         );
@@ -61,14 +61,14 @@ class PaymentController {
         customerData
       );
 
-      logger.info('Payment intent created successfully', traceId, { paymentIntentId: paymentIntent.paymentIntentId });
+      logger.info({ traceId, paymentIntentId: paymentIntent.paymentIntentId }, 'Payment intent created successfully');
 
       res.json(
         createApiResponse(true, paymentIntent, 'Payment intent created successfully')
       );
 
     } catch (error) {
-      logger.error('Failed to create payment intent', traceId, { error: error.message });
+      logger.error({ traceId, error: error.message }, 'Failed to create payment intent');
       res.status(500).json(
         createApiResponse(false, null, 'Failed to create payment intent', 500)
       );
@@ -80,7 +80,7 @@ class PaymentController {
    * POST /api/create-phonepe-payment
    */
   async createPhonePePayment(req, res) {
-    const traceId = logger.generateTraceId();
+    const traceId = `trace-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     try {
       logRequest(req, 'CREATE_PHONEPE_PAYMENT');
 
@@ -96,7 +96,7 @@ class PaymentController {
       ]);
 
       if (!validation.isValid) {
-        logger.warn('Payment validation failed', traceId, { missingFields: validation.missingFields });
+        logger.warn({ traceId, missingFields: validation.missingFields }, 'Payment validation failed');
         return res.status(400).json(
           createApiResponse(false, null, `Missing required fields: ${validation.missingFields.join(', ')}`, 400)
         );
@@ -122,15 +122,13 @@ class PaymentController {
           paymentMethod: 'phonepe'
         };
         
-        logger.info('PhonePe payment initiated and stored as PENDING', traceId, { 
-          transactionId: paymentResult.transactionId 
-        });
+        logger.info({ traceId, transactionId: paymentResult.transactionId }, 'PhonePe payment initiated and stored as PENDING');
         
         res.json(
           createApiResponse(true, paymentRequest, 'PhonePe payment initiated successfully')
         );
       } catch (error) {
-        logger.error('PhonePe payment initiation failed', traceId, { error: error.message });
+        logger.error({ traceId, error: error.message }, 'PhonePe payment initiation failed');
         
         // Fallback to UPI deep link
         const transactionId = `MT${Date.now()}`;
@@ -145,7 +143,7 @@ class PaymentController {
           paymentMethod: 'phonepe'
         };
         
-        logger.info('Fallback UPI payment created', traceId, { transactionId });
+        logger.info({ traceId, transactionId }, 'Fallback UPI payment created');
         
         res.json(
           createApiResponse(true, paymentRequest, 'Payment request created successfully')
@@ -153,7 +151,7 @@ class PaymentController {
       }
 
     } catch (error) {
-      logger.error('Failed to create PhonePe payment request', traceId, { error: error.message });
+      logger.error({ traceId, error: error.message }, 'Failed to create PhonePe payment request');
       res.status(500).json(
         createApiResponse(false, null, 'Failed to create PhonePe payment request', 500)
       );
@@ -248,7 +246,7 @@ class PaymentController {
    * POST /api/phonepe-webhook
    */
   async handlePhonePeWebhook(req, res) {
-    const traceId = logger.generateTraceId();
+    const traceId = `trace-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     try {
       logRequest(req, 'PHONEPE_WEBHOOK');
 
@@ -256,7 +254,7 @@ class PaymentController {
       const responseBody = JSON.stringify(req.body);
 
       if (!authorization) {
-        logger.warn('Missing authorization header in PhonePe webhook', traceId);
+        logger.warn({ traceId }, 'Missing authorization header in PhonePe webhook');
         return res.status(400).json(
           createApiResponse(false, null, 'Missing authorization header', 400)
         );
@@ -265,46 +263,35 @@ class PaymentController {
       // Validate callback using PhonePe SDK
       const callbackData = phonePeService.validateCallback(authorization, responseBody);
       
-      logger.info('PhonePe webhook validated successfully', traceId, { 
-        type: callbackData.type,
-        orderId: callbackData.orderId,
-        state: callbackData.state
-      });
+      logger.info({ traceId, type: callbackData.type, orderId: callbackData.orderId, state: callbackData.state }, 'PhonePe webhook validated successfully');
 
       // Handle different callback types
       switch (callbackData.type) {
         case 'CHECKOUT_ORDER_COMPLETED':
-          logger.info('Payment completed successfully', traceId, { orderId: callbackData.orderId });
+          logger.info({ traceId, orderId: callbackData.orderId }, 'Payment completed successfully');
           
           // Try to send confirmation emails if we have the data
           try {
             // In a real application, you'd fetch this from a database using the transaction ID
             // For now, we'll log that emails should be sent
-            logger.info('Payment completed - emails should be triggered', traceId, {
-              orderId: callbackData.orderId,
-              originalMerchantOrderId: callbackData.originalMerchantOrderId
-            });
+            logger.info({ traceId, orderId: callbackData.orderId, originalMerchantOrderId: callbackData.originalMerchantOrderId }, 'Payment completed - emails should be triggered');
           } catch (emailError) {
-            logger.error('Failed to send confirmation emails', traceId, { error: emailError.message });
+            logger.error({ traceId, error: emailError.message }, 'Failed to send confirmation emails');
           }
           break;
         case 'CHECKOUT_ORDER_FAILED':
-          logger.warn('Payment failed', traceId, { orderId: callbackData.orderId });
+          logger.warn({ traceId, orderId: callbackData.orderId }, 'Payment failed');
           
           // Send failure notification email
           try {
             // In a real application, you'd fetch booking data from database
-            logger.info('Payment failed - failure notification should be sent', traceId, {
-              orderId: callbackData.orderId,
-              originalMerchantOrderId: callbackData.originalMerchantOrderId,
-              reason: 'Payment gateway failure or user cancellation'
-            });
+            logger.info({ traceId, orderId: callbackData.orderId, originalMerchantOrderId: callbackData.originalMerchantOrderId, reason: 'Payment gateway failure or user cancellation' }, 'Payment failed - failure notification should be sent');
           } catch (emailError) {
-            logger.error('Failed to send failure notification', traceId, { error: emailError.message });
+            logger.error({ traceId, error: emailError.message }, 'Failed to send failure notification');
           }
           break;
         default:
-          logger.info('Unhandled callback type', traceId, { type: callbackData.type });
+          logger.info({ traceId, type: callbackData.type }, 'Unhandled callback type');
       }
 
       res.json(
@@ -312,7 +299,7 @@ class PaymentController {
       );
 
     } catch (error) {
-      logger.error('PhonePe webhook processing failed', traceId, { error: error.message });
+      logger.error({ traceId, error: error.message }, 'PhonePe webhook processing failed');
       res.status(400).json(
         createApiResponse(false, null, `PhonePe Webhook Error: ${error.message}`, 400)
       );
@@ -324,16 +311,25 @@ class PaymentController {
    * POST /api/send-confirmation-emails
    */
   async sendConfirmationEmails(req, res) {
-    const traceId = logger.generateTraceId();
+    const traceId = `trace-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     try {
       logRequest(req, 'SEND_CONFIRMATION_EMAILS');
 
       const { transactionId } = req.body;
 
       if (!transactionId) {
-        logger.warn('Missing transaction ID for email confirmation', traceId);
+        logger.warn({ traceId }, 'Missing transaction ID for email confirmation');
         return res.status(400).json(
           createApiResponse(false, null, 'Transaction ID is required', 400)
+        );
+      }
+
+      // Check if emails were already sent for this transaction
+      const emailSentKey = `email_sent_${transactionId}`;
+      if (global.emailsSent && global.emailsSent[emailSentKey]) {
+        logger.info({ traceId, transactionId }, 'Emails already sent for this transaction');
+        return res.json(
+          createApiResponse(true, { sent: false, reason: 'already_sent' }, 'Emails already sent for this transaction')
         );
       }
 
@@ -342,7 +338,7 @@ class PaymentController {
       const serviceData = JSON.parse(req.body.serviceData || '{}');
 
       if (!bookingData.email || !serviceData.title) {
-        logger.warn('Missing booking or service data for email confirmation', traceId);
+        logger.warn({ traceId }, 'Missing booking or service data for email confirmation');
         return res.status(400).json(
           createApiResponse(false, null, 'Booking and service data are required', 400)
         );
@@ -351,17 +347,18 @@ class PaymentController {
       // Send confirmation emails
       await emailService.sendBookingEmails(bookingData, serviceData);
       
-      logger.info('Confirmation emails sent successfully', traceId, { 
-        customerEmail: bookingData.email,
-        transactionId
-      });
+      // Mark as sent
+      if (!global.emailsSent) global.emailsSent = {};
+      global.emailsSent[emailSentKey] = true;
+      
+      logger.info({ traceId, customerEmail: bookingData.email, transactionId }, 'Confirmation emails sent successfully');
 
       res.json(
         createApiResponse(true, { sent: true }, 'Confirmation emails sent successfully')
       );
 
     } catch (error) {
-      logger.error('Failed to send confirmation emails', traceId, { error: error.message });
+      logger.error({ traceId, error: error.message }, 'Failed to send confirmation emails');
       res.status(500).json(
         createApiResponse(false, null, 'Failed to send confirmation emails', 500)
       );
@@ -372,14 +369,14 @@ class PaymentController {
    * POST /api/send-failure-notification
    */
   async sendFailureNotification(req, res) {
-    const traceId = logger.generateTraceId();
+    const traceId = `trace-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     try {
       logRequest(req, 'SEND_FAILURE_NOTIFICATION');
 
       const { transactionId, reason, bookingData, serviceData } = req.body;
 
       if (!transactionId || !reason) {
-        logger.warn('Missing required data for failure notification', traceId);
+        logger.warn({ traceId }, 'Missing required data for failure notification');
         return res.status(400).json(
           createApiResponse(false, null, 'Transaction ID and reason are required', 400)
         );
@@ -389,7 +386,7 @@ class PaymentController {
       const service = JSON.parse(serviceData || '{}');
 
       if (!customerData.fullName || !service.title) {
-        logger.warn('Missing booking or service data for failure notification', traceId);
+        logger.warn({ traceId }, 'Missing booking or service data for failure notification');
         return res.status(400).json(
           createApiResponse(false, null, 'Booking and service data are required', 400)
         );
@@ -398,18 +395,14 @@ class PaymentController {
       // Send failure notification email
       await emailService.sendPaymentFailureNotification(customerData, service, reason, transactionId);
       
-      logger.info('Payment failure notification sent', traceId, { 
-        customerEmail: customerData.email,
-        transactionId,
-        reason
-      });
+      logger.info({ traceId, customerEmail: customerData.email, transactionId, reason }, 'Payment failure notification sent');
 
       res.json(
         createApiResponse(true, { sent: true }, 'Failure notification sent successfully')
       );
 
     } catch (error) {
-      logger.error('Failed to send failure notification', traceId, { error: error.message });
+      logger.error({ traceId, error: error.message }, 'Failed to send failure notification');
       res.status(500).json(
         createApiResponse(false, null, 'Failed to send failure notification', 500)
       );
@@ -421,7 +414,7 @@ class PaymentController {
    * POST /api/send-contact-message
    */
   async sendContactMessage(req, res) {
-    const traceId = logger.generateTraceId();
+    const traceId = `trace-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     try {
       logRequest(req, 'SEND_CONTACT_MESSAGE');
 
@@ -429,7 +422,7 @@ class PaymentController {
 
       // Validate required fields
       if (!name || !email || !message) {
-        logger.warn('Missing required fields for contact message', traceId);
+        logger.warn({ traceId }, 'Missing required fields for contact message');
         return res.status(400).json(
           createApiResponse(false, null, 'Name, email, and message are required', 400)
         );
@@ -437,7 +430,7 @@ class PaymentController {
 
       // Validate email format
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        logger.warn('Invalid email format in contact message', traceId);
+        logger.warn({ traceId }, 'Invalid email format in contact message');
         return res.status(400).json(
           createApiResponse(false, null, 'Invalid email format', 400)
         );
@@ -446,17 +439,14 @@ class PaymentController {
       // Send contact message email
       await emailService.sendContactMessage({ name, email, message });
       
-      logger.info('Contact message sent successfully', traceId, { 
-        senderEmail: email,
-        senderName: name
-      });
+      logger.info({ traceId, senderEmail: email, senderName: name }, 'Contact message sent successfully');
 
       res.json(
         createApiResponse(true, { sent: true }, 'Message sent successfully')
       );
 
     } catch (error) {
-      logger.error('Failed to send contact message', traceId, { error: error.message });
+      logger.error({ traceId, error: error.message }, 'Failed to send contact message');
       res.status(500).json(
         createApiResponse(false, null, 'Failed to send message', 500)
       );
@@ -464,14 +454,14 @@ class PaymentController {
   }
 
   async checkPaymentStatus(req, res) {
-    const traceId = logger.generateTraceId();
+    const traceId = `trace-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     try {
       logRequest(req, 'CHECK_PAYMENT_STATUS');
 
       const { transactionId } = req.params;
 
       if (!transactionId) {
-        logger.warn('Missing transaction ID', traceId);
+        logger.warn({ traceId }, 'Missing transaction ID');
         return res.status(400).json(
           createApiResponse(false, null, 'Transaction ID is required', 400)
         );
@@ -480,17 +470,14 @@ class PaymentController {
       // Check payment status using PhonePe service
       const statusResult = await phonePeService.checkPaymentStatus(transactionId);
       
-      logger.info('Payment status checked successfully', traceId, { 
-        transactionId,
-        state: statusResult.state
-      });
+      logger.info({ traceId, transactionId, state: statusResult.state }, 'Payment status checked successfully');
 
       res.json(
         createApiResponse(true, statusResult, 'Payment status retrieved successfully')
       );
 
     } catch (error) {
-      logger.error('Payment status check failed', traceId, { error: error.message });
+      logger.error({ traceId, error: error.message }, 'Payment status check failed');
       res.status(500).json(
         createApiResponse(false, null, 'Failed to check payment status', 500)
       );

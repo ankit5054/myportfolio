@@ -102,9 +102,10 @@ class EmailService {
    * Generate HTML template for business notification email
    * @param {Object} customerData - Customer information
    * @param {Object} serviceData - Service details
+   * @param {string} transactionId - Transaction ID
    * @returns {string} HTML email template
    */
-  generateNotificationEmailTemplate(customerData, serviceData) {
+  generateNotificationEmailTemplate(customerData, serviceData, transactionId = null) {
     const urgencyColors = {
       low: '#10b981',
       normal: '#3b82f6', 
@@ -186,7 +187,7 @@ class EmailService {
               <div style="color: #b45309; line-height: 1.6;">
                 <div style="font-size: 24px; font-weight: bold; color: #059669;">$${serviceData.price}</div>
                 <div style="font-size: 12px; color: #6b7280;">Payment completed successfully</div>
-                <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Transaction ID: TXN-${Date.now()}</div>
+                <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Transaction ID: ${transactionId || `TXN-${Date.now()}`}</div>
               </div>
             </div>
           </div>
@@ -283,9 +284,10 @@ class EmailService {
    * Send confirmation email to customer
    * @param {Object} customerData - Customer information
    * @param {Object} serviceData - Service details
+   * @param {string} transactionId - Transaction ID
    * @returns {Promise} Email sending promise
    */
-  async sendCustomerConfirmation(customerData, serviceData) {
+  async sendCustomerConfirmation(customerData, serviceData, transactionId = null) {
     console.log('DEBUG: Customer email for confirmation:', customerData.email);
     
     const emailOptions = {
@@ -302,14 +304,15 @@ class EmailService {
    * Send notification email to business owner
    * @param {Object} customerData - Customer information
    * @param {Object} serviceData - Service details
+   * @param {string} transactionId - Transaction ID
    * @returns {Promise} Email sending promise
    */
-  async sendBusinessNotification(customerData, serviceData) {
+  async sendBusinessNotification(customerData, serviceData, transactionId = null) {
     const emailOptions = {
       from: config.email.user,
       to: config.email.user,
       subject: `New Booking: ${serviceData.title} - ${customerData.fullName}`,
-      html: this.generateNotificationEmailTemplate(customerData, serviceData)
+      html: this.generateNotificationEmailTemplate(customerData, serviceData, transactionId)
     };
 
     return await this.transporter.sendMail(emailOptions);
@@ -499,6 +502,12 @@ class EmailService {
    * @returns {Promise} Email sending promise
    */
   async sendPaymentFailureNotification(customerData, serviceData, reason, transactionId) {
+    // Check if failure notification was already sent for this transaction
+    if (global.failureNotificationsSent && global.failureNotificationsSent[transactionId]) {
+      console.log(`Failure notification already sent for transaction: ${transactionId}`);
+      return;
+    }
+
     const emailOptions = {
       from: config.email.user,
       to: config.email.user,
@@ -506,7 +515,13 @@ class EmailService {
       html: this.generatePaymentFailureEmailTemplate(customerData, serviceData, reason, transactionId)
     };
 
-    return await this.transporter.sendMail(emailOptions);
+    const result = await this.transporter.sendMail(emailOptions);
+    
+    // Mark as sent
+    if (!global.failureNotificationsSent) global.failureNotificationsSent = {};
+    global.failureNotificationsSent[transactionId] = true;
+    
+    return result;
   }
 
   /**
@@ -560,8 +575,43 @@ class EmailService {
 
     return await this.transporter.sendMail(emailOptions);
   }
-}
+  /**
+   * Send both customer confirmation and business notification emails
+   * @param {Object} customerData - Customer information
+   * @param {Object} serviceData - Service details
+   * @param {string} transactionId - Transaction ID
+   * @returns {Promise} Combined email sending promise
+   */
+  async sendBookingEmails(customerData, serviceData, transactionId = null) {
+    try {
+      // Send both emails concurrently
+      const [customerResult, businessResult] = await Promise.allSettled([
+        this.sendCustomerConfirmation(customerData, serviceData, transactionId),
+        this.sendBusinessNotification(customerData, serviceData, transactionId)
+      ]);
 
-module.exports = new EmailService();
+      // Log results
+      if (customerResult.status === 'fulfilled') {
+        console.log('Customer confirmation email sent successfully');
+      } else {
+        console.error('Failed to send customer confirmation:', customerResult.reason);
+      }
+
+      if (businessResult.status === 'fulfilled') {
+        console.log('Business notification email sent successfully');
+      } else {
+        console.error('Failed to send business notification:', businessResult.reason);
+      }
+
+      return {
+        customerEmail: customerResult,
+        businessEmail: businessResult
+      };
+    } catch (error) {
+      console.error('Error in sendBookingEmails:', error);
+      throw error;
+    }
+  }
+}
 
 module.exports = new EmailService();

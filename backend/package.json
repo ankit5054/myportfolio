@@ -13,6 +13,8 @@
     "express": "^4.18.2",
     "nodemailer": "^6.9.7",
     "pg-sdk-node": "https://phonepe.mycloudrepo.io/public/repositories/phonepe-pg-sdk-node/releases/v2/phonepe-pg-sdk-node-2.0.3.tgz",
+    "pino": "^8.16.2",
+    "pino-pretty": "^10.2.3",
     "stripe": "^14.9.0"
   },
   "devDependencies": {
