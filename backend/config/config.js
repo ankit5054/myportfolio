@@ -8,8 +8,9 @@ require('dotenv').config();
 const config = {
   // Server configuration
   server: {
-    port: process.env.PORT || 3001,
-    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000'
+    port: process.env.PORT || 8888,
+    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
+    backendUrl: process.env.BACKEND_URL || 'http://localhost:8888'
   },
 
   // Stripe configuration

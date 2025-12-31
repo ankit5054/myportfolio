@@ -134,7 +134,7 @@ const PaymentForm = ({ service, onBack }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      const response = await fetch('http://localhost:3001/api/create-phonepe-payment', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8888'}/api/create-phonepe-payment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
