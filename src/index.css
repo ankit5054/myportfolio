@@ -8,5 +8,15 @@
 @layer base{
   html{
     font-family: 'inter', sans-serif;
+    overflow-x: hidden;
+    width: 100%;
+  }
+  body {
+    overflow-x: hidden;
+    width: 100%;
+    background: linear-gradient(135deg, #1f2937 0%, #000000 50%, #1f2937 100%);
+  }
+  * {
+    box-sizing: border-box;
   }
 }

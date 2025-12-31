@@ -39,7 +39,7 @@ const Social = () => {
           Resume <GoFilePdf size={30} />
         </>
       ),
-      href: "https://drive.google.com/file/d/1BH0Zk6qOewV-cTMLpOHlDX_0ytooOxlZ/view?usp=sharing",
+      href: "https://drive.google.com/file/d/1EAuoyDHwrjMyEww_0B8qh0Z0evxl5CLk/view?usp=sharing",
       download: true,
     },
   ];
