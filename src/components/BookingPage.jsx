@@ -31,7 +31,7 @@ const BookingPage = () => {
   
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState({});
-  const [emailVerified, setEmailVerified] = useState(true);
+  const [emailVerified, setEmailVerified] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
   const [otpLoading, setOtpLoading] = useState(false);
@@ -50,15 +50,15 @@ const BookingPage = () => {
     // Default form data
     return {
       // Personal Information
-      fullName: 'Ankit',
-      email: 'ankit.mishra2780@gmail.com',
-      phone: '9786756453',
+      fullName: '',
+      email: '',
+      phone: '',
       company: '',
       role: '',
       
       // Project Details
-      projectTitle: 'fvghbjn tfgvbh',
-      projectDescription: 'esrdtfgy drftgybh',
+      projectTitle: '',
+      projectDescription: '',
       timeline: '',
       budget: '',
       urgency: 'normal',

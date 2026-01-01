@@ -36,7 +36,7 @@ const PaymentSuccess = () => {
 
   const checkPaymentStatus = async (transactionId) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/payment-status/${transactionId}`);
+      const response = await fetch(`http://localhost:8888/api/payment-status/${transactionId}`);
       const data = await response.json();
       
       if (data.success) {
