@@ -55,6 +55,21 @@ const Services = () => {
     visible: { opacity: 1, y: 0 }
   };
 
+  const handleContactForService = (service) => {
+    const subject = encodeURIComponent(`Inquiry about ${service.title}`);
+    const body = encodeURIComponent(
+      `Hi Ankit,\n\n` +
+      `I'm interested in your "${service.title}" service.\n\n` +
+      `Service Details:\n` +
+      `- Duration: ${service.duration}\n` +
+      `- Price: $${service.price}\n\n` +
+      `Please let me know your availability and next steps.\n\n` +
+      `Best regards`
+    );
+    
+    window.location.href = `mailto:ankit.mishra9780@gmail.com?subject=${subject}&body=${body}`;
+  };
+
   return (
     <div name="Services" className="py-16 sm:py-20 px-2 sm:px-4 min-h-screen flex items-center overflow-x-hidden">
       <div className="max-w-7xl mx-auto w-full">
@@ -130,23 +145,10 @@ const Services = () => {
                 </ul>
 
                 <button
-                  onClick={() => {
-                    const serviceData = {
-                      id: service.id,
-                      title: service.title,
-                      price: service.price,
-                      originalPrice: service.originalPrice,
-                      duration: service.duration,
-                      features: service.features,
-                      popular: service.popular,
-                      discount: service.discount
-                    };
-                    localStorage.setItem('bookingService', JSON.stringify(serviceData));
-                    window.open(`/book/${service.id}`, '_blank');
-                  }}
+                  onClick={() => handleContactForService(service)}
                   className="w-full py-3 sm:py-4 rounded-xl font-semibold transition-all duration-300 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl text-sm sm:text-base"
                 >
-                  Book Now
+                  Contact for Service
                 </button>
               </motion.div>
             ))}

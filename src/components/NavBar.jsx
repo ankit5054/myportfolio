@@ -9,9 +9,8 @@ const NavBar = ({ prop }) => {
     { id: 2, link: "About" },
     { id: 3, link: "Skills" },
     { id: 4, link: "Portfolio" },
-    { id: 5, link: "Services" },
-    { id: 6, link: "Experience" },
-    { id: 7, link: "Contact" },
+    { id: 5, link: "Experience" },
+    { id: 6, link: "Contact" },
   ];
 
   return (
