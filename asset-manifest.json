@@ -1,9 +1,8 @@
 {
   "files": {
-    "main.css": "/static/css/main.3f1664ab.css",
-    "main.js": "/static/js/main.8a53294d.js",
+    "main.css": "/static/css/main.3a8609ec.css",
+    "main.js": "/static/js/main.5c37614e.js",
     "static/media/netflixgpt.png": "/static/media/netflixgpt.5bab4bff4e649d32426b.png",
-    "static/media/Mypic.jpeg": "/static/media/Mypic.9da9f85a5b1be5f57a6d.jpeg",
     "static/media/react.png": "/static/media/react.0cf951a69d8e58f83f9d.png",
     "static/media/todo.jpg": "/static/media/todo.1ec70eb7e5f746c5d808.jpg",
     "static/media/node.png": "/static/media/node.952a9ea986dcfa5229ad.png",
@@ -13,11 +12,11 @@
     "static/media/css.png": "/static/media/css.69a82c2d9e45c933a9cb.png",
     "static/media/javascript.png": "/static/media/javascript.1ccd6ef9bb1f9c84ef00.png",
     "index.html": "/index.html",
-    "main.3f1664ab.css.map": "/static/css/main.3f1664ab.css.map",
-    "main.8a53294d.js.map": "/static/js/main.8a53294d.js.map"
+    "main.3a8609ec.css.map": "/static/css/main.3a8609ec.css.map",
+    "main.5c37614e.js.map": "/static/js/main.5c37614e.js.map"
   },
   "entrypoints": [
-    "static/css/main.3f1664ab.css",
-    "static/js/main.8a53294d.js"
+    "static/css/main.3a8609ec.css",
+    "static/js/main.5c37614e.js"
   ]
 }
